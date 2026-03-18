@@ -21,7 +21,7 @@ public class DragonAcademy {
             System.out.print("Select an option: ");
             
             option = scanner.nextInt();
-            scanner.nextLine(); // Clear buffer
+            scanner.nextLine();
 
             switch (option) {
                 case 1 -> addDragon();
@@ -35,14 +35,7 @@ public class DragonAcademy {
         }
     }
 
-    private static void addDragon() {
-        System.out.print("Enter ID: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
-        System.out.print("Enter Name: ");
-        String name = scanner.nextLine();
-        System.out.print("Enter Type (fire, water, earth, wind, light, darkness): ");
-        String type = scanner.nextLine();
+    
         System.out.print("Enter Power Level: ");
         int power = scanner.nextInt();
 
@@ -71,21 +64,37 @@ public class DragonAcademy {
     }
 
     private static void editDragon() {
-        System.out.print("Enter ID to edit: ");
-        int id = scanner.nextInt();
-        scanner.nextLine();
-        for (dragons d : dragonList) {
-            if (d.getId() == id) {
-                System.out.print("New Name: ");
-                d.setName(scanner.nextLine());
-                System.out.print("New Type: ");
-                d.setType(scanner.nextLine());
-                System.out.print("New Power Level: ");
-                d.setPowerLevel(scanner.nextInt());
-                System.out.println("Dragon updated!");
-                return;
+    System.out.print("Enter ID to edit: ");
+    int id = scanner.nextInt();
+    scanner.nextLine();
+
+    for (dragons d : dragonList) {
+        if (d.getId() == id) {
+            System.out.print("New Name: ");
+            d.setName(scanner.nextLine());
+
+            String newType = "";
+            boolean typeValid = false;
+            while (!typeValid) {
+                System.out.print("New Type (fire, water, earth, wind, light, darkness): ");
+                newType = scanner.nextLine().toLowerCase();
+                
+                if ("fire|water|earth|wind|light|darkness".contains(newType)) {
+                    typeValid = true;
+                    d.setType(newType);
+                } else {
+                    System.out.println("Select a valid type!");
+                }
             }
+
+            System.out.print("New Power Level: ");
+            d.setPowerLevel(scanner.nextInt());
+            System.out.println("Dragon updated!");
+            return;
         }
+    }
+    System.out.println("ID not found.");
+}
         System.out.println("ID not found.");
     }
 
