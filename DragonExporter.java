@@ -1,19 +1,24 @@
-package dragon;
-import java.util.ArrayList;
+package Dragon;
+
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 public class DragonExporter {
     
-    // Single export method that handles all formats
     public static boolean export(ArrayList<Dragon> dragons, String format, String filename) {
+        if (dragons == null || dragons.isEmpty()) {
+            System.out.println("No dragons to export.");
+            return false;
+        }
+
         switch (format.toLowerCase()) {
             case "csv":
                 return exportToCSV(dragons, filename);
             case "xls":
-                return exportToXLS(dragons, filename);
             case "xlsx":
-                return exportToXLSX(dragons, filename);
+                return exportToExcelCompatible(dragons, filename, format.toLowerCase());
             case "json":
                 return exportToJSON(dragons, filename);
             default:
@@ -23,69 +28,45 @@ public class DragonExporter {
     }
 
     private static boolean exportToCSV(ArrayList<Dragon> dragons, String filename) {
-        try {
-            PrintWriter writer = new PrintWriter(new FileWriter(filename + ".csv"));
+        try (PrintWriter writer = new PrintWriter(new FileWriter(filename + ".csv"))) {
             writer.println("ID,Name,Type,Level,ATK,DEF");
             for (Dragon dragon : dragons) {
                 writer.println(dragon.toCSV());
             }
-            writer.close();
             return true;
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("CSV Export Error: " + e.getMessage());
             return false;
         }
     }
 
-    private static boolean exportToXLS(ArrayList<Dragon> dragons, String filename) {
-        try {
-            PrintWriter writer = new PrintWriter(new FileWriter(filename + ".xls"));
+    private static boolean exportToExcelCompatible(ArrayList<Dragon> dragons, String filename, String ext) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(filename + "." + ext))) {
             writer.println("ID\tName\tType\tLevel\tATK\tDEF");
-            for (Dragon dragon : dragons) {
-                writer.println(dragon.getId() + "\t" + dragon.getName() + "\t" + 
-                    dragon.getType() + "\t" + dragon.getLevel() + "\t" + 
-                    dragon.getAtk() + "\t" + dragon.getDef());
+            for (Dragon d : dragons) {
+                // Using \t for tab-separation so Excel opens it correctly
+                writer.printf("%d\t%s\t%s\t%d\t%d\t%d%n", 
+                    d.getId(), d.getName(), d.getType(), d.getLevel(), d.getAtk(), d.getDef());
             }
-            writer.close();
             return true;
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return false;
-        }
-    }
-
-    private static boolean exportToXLSX(ArrayList<Dragon> dragons, String filename) {
-        try {
-            PrintWriter writer = new PrintWriter(new FileWriter(filename + ".xlsx"));
-            writer.println("ID,Name,Type,Level,ATK,DEF");
-            for (Dragon dragon : dragons) {
-                writer.println(dragon.toCSV());
-            }
-            writer.close();
-            return true;
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("Excel Export Error: " + e.getMessage());
             return false;
         }
     }
 
     private static boolean exportToJSON(ArrayList<Dragon> dragons, String filename) {
-        try {
-            PrintWriter writer = new PrintWriter(new FileWriter(filename + ".json"));
+        try (PrintWriter writer = new PrintWriter(new FileWriter(filename + ".json"))) {
             writer.println("[");
             for (int i = 0; i < dragons.size(); i++) {
                 writer.print("  " + dragons.get(i).toJSON());
-                if (i < dragons.size() - 1) {
-                    writer.println(",");
-                } else {
-                    writer.println();
-                }
+                if (i < dragons.size() - 1) writer.println(",");
+                else writer.println();
             }
             writer.println("]");
-            writer.close();
             return true;
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+        } catch (IOException e) {
+            System.err.println("JSON Export Error: " + e.getMessage());
             return false;
         }
     }
