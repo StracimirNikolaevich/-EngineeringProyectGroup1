@@ -1,4 +1,5 @@
-package dragon;
+package Dragon;
+
 
 public class Dragon {
 	private int id;
@@ -27,9 +28,26 @@ public class Dragon {
 
     public void setName(String name) { this.name = name; }
     public void setType(String type) { this.type = type; }
-    public void setLevel(int level) { this.powerLevel = powerLevel; }
+    public void setLevel(int level) { this.powerLevel = level; }
     public void setAtk(int atk) { this.atk = atk; }
     public void setDef(int def) { this.def = def; }
+    
+    public String toCSV() {
+        return id + "," + name + "," + type + "," + powerLevel + "," + atk + "," + def;
+    }
+
+    public String toJSON() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"id\":").append(id).append(",");
+        sb.append("\"name\":\"").append(name).append("\",");
+        sb.append("\"type\":\"").append(type).append("\",");
+        sb.append("\"level\":").append(powerLevel).append(",");
+        sb.append("\"atk\":").append(atk).append(",");
+        sb.append("\"def\":").append(def);
+        sb.append("}");
+        return sb.toString();
+    }
     
     @Override
     public String toString() {
